@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Cliente {
     Game partida;
     String palabra;
@@ -55,6 +57,14 @@ public class Cliente {
         }
 
         return found!=-1;
+    }
+
+    public boolean victoria(String guess){
+        String comp ="";
+        for(int i =0; i<palabra.length();i++){
+            comp+="o";
+        }
+        return (Objects.equals(comprobar(guess), comp));
     }
 
     public Game getPartida() {
