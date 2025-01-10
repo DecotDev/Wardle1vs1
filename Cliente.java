@@ -1,7 +1,15 @@
 public class Cliente {
     Game partida;
     String palabra;
-    String respuesta="xxxxx";
+    String respuesta="";
+
+    public Cliente(String palabra) {
+        this.palabra = palabra;
+        for(int i =0; i<palabra.length();i++){
+            respuesta+="x";
+        }
+    }
+
 
     public String comprobar(String guess){
 
