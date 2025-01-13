@@ -4,7 +4,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        Cliente a = new Cliente("hue");
+        Cliente a = new Cliente("huevo");
         boolean correcto = false;
         System.out.println("Welcome to WARdle.");
         System.out.println("The word has "+a.palabra.length()+" letters. Good luck!");
