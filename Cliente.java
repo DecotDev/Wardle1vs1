@@ -17,7 +17,7 @@ public class Cliente {
         Scanner sc = new Scanner(palabraslist);
         String [] palabras = sc.nextLine().split(";");
 
-        this.palabra = palabras[(int)Math.random()*palabras.length];
+        this.palabra = palabras[(int) (Math.random() * palabras.length)];
         for(int i =0; i<palabra.length();i++){
             respuesta += wrong;
         }
