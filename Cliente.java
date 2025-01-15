@@ -7,6 +7,7 @@ public class Cliente {
     Game partida;
     String palabra;
     String respuesta="";
+    char correct = 'O', existent = '?', wrong = '-';
 
 
 
@@ -18,9 +19,10 @@ public class Cliente {
 
         this.palabra = palabras[(int)Math.random()*palabras.length];
         for(int i =0; i<palabra.length();i++){
-            respuesta+="x";
+            respuesta += wrong;
         }
     }
+
 
 
     public String comprobar(String guess){
@@ -32,22 +34,22 @@ public class Cliente {
 
         for (int i =0; i < divG.length; i++){
 
-            if(divR[i]=='x'){
+            if(divR[i]==wrong){
                 if (divG[i]==divP[i]){
-                    divR[i]='o';
+                    divR[i]=correct;
                 } else if(existe(divG[i], divP)){
-                    divR[i]='-';
+                    divR[i]=existent;
                 }
             } else {
                 if (divG[i]!=divP[i]){
-                    divR[i]='x';
+                    divR[i]=wrong;
                 } else if(!existe(divG[i], divP)){
-                    divR[i]='x';
+                    divR[i]=wrong;
                 }
                 if (divG[i]==divP[i]){
-                    divR[i]='o';
+                    divR[i]=correct;
                 } else if(existe(divG[i], divP)){
-                    divR[i]='-';
+                    divR[i]=existent;
                 }
             }
         }
@@ -72,7 +74,7 @@ public class Cliente {
     public boolean victoria(String guess){
         String comp ="";
         for(int i =0; i<palabra.length();i++){
-            comp+="o";
+            comp+=correct;
         }
         return (Objects.equals(comprobar(guess), comp));
     }
