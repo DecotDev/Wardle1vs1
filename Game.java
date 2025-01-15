@@ -1,6 +1,8 @@
 import java.util.Scanner;
 
 public class Game {
+
+
     Scanner sc = new Scanner(System.in);
 
     public void jugar(Cliente a){

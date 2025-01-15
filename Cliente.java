@@ -1,12 +1,22 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Objects;
+import java.util.Scanner;
 
 public class Cliente {
     Game partida;
     String palabra;
     String respuesta="";
 
-    public Cliente(String palabra) {
-        this.palabra = palabra;
+
+
+
+    public Cliente() throws FileNotFoundException {
+        File palabraslist = new File(Main.class.getResource("Palabras.txt").getFile());
+        Scanner sc = new Scanner(palabraslist);
+        String [] palabras = sc.nextLine().split(";");
+
+        this.palabra = palabras[(int)Math.random()*palabras.length];
         for(int i =0; i<palabra.length();i++){
             respuesta+="x";
         }
