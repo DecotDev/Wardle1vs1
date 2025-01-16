@@ -8,7 +8,7 @@ public class Cliente {
     String palabra;
     String respuesta="";
     char correct = 'O', existent = '?', wrong = '-';
-a
+
 
 
 
