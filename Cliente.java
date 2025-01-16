@@ -12,12 +12,8 @@ public class Cliente {
 
 
 
-    public Cliente() throws FileNotFoundException {
-        File palabraslist = new File(Main.class.getResource("Palabras.txt").getFile());
-        Scanner sc = new Scanner(palabraslist);
-        String [] palabras = sc.nextLine().split(";");
-
-        this.palabra = palabras[(int) (Math.random() * palabras.length)];
+    public Cliente(String palabra) throws FileNotFoundException {
+        this.palabra = palabra;
         for(int i =0; i<palabra.length();i++){
             respuesta += wrong;
         }
@@ -34,23 +30,17 @@ public class Cliente {
 
         for (int i =0; i < divG.length; i++){
 
-            if(divR[i]==wrong){
-                if (divG[i]==divP[i]){
-                    divR[i]=correct;
-                } else if(existe(divG[i], divP)){
-                    divR[i]=existent;
+            if (divR[i] != wrong) {
+                if (divG[i] != divP[i]) {
+                    divR[i] = wrong;
+                } else if (!existe(divG[i], divP)) {
+                    divR[i] = wrong;
                 }
-            } else {
-                if (divG[i]!=divP[i]){
-                    divR[i]=wrong;
-                } else if(!existe(divG[i], divP)){
-                    divR[i]=wrong;
-                }
-                if (divG[i]==divP[i]){
-                    divR[i]=correct;
-                } else if(existe(divG[i], divP)){
-                    divR[i]=existent;
-                }
+            }
+            if (divG[i]==divP[i]){
+                divR[i]=correct;
+            } else if(existe(divG[i], divP)){
+                divR[i]=existent;
             }
         }
 

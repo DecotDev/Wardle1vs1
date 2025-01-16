@@ -7,7 +7,7 @@ public class Game {
 
     public void jugar(Cliente a){
     boolean correcto = false;
-        System.out.println("Welcome to WARdle.");
+        System.out.println("\nWelcome to WARdle.");
         System.out.println("The word has "+a.palabra.length()+" letters. Good luck!");
 
     int turnos = 0;
