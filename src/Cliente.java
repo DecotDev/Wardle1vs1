@@ -9,9 +9,6 @@ public class Cliente {
     String respuesta="";
     char correct = 'O', existent = '?', wrong = '-';
 
-
-
-
     public Cliente(String palabra) throws FileNotFoundException {
         this.palabra = palabra;
         for(int i =0; i<palabra.length();i++){
@@ -19,10 +16,7 @@ public class Cliente {
         }
     }
 
-
-
     public String comprobar(String guess){
-
 
         char[] divG = guess.toCharArray();
         char[] divP = palabra.toCharArray();
