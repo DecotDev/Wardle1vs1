@@ -9,9 +9,14 @@ public class ThreadServerWardle extends Thread{
     private OutputStream out = null;
 
 
-    public ThreadServerWardle(Socket clientSocket) throws IOException {
+    public ThreadServerWardle(Socket clientSocket, Game game) throws IOException {
         this.clientSocket = clientSocket;
         in = clientSocket.getInputStream();
         out = clientSocket.getOutputStream();
+    }
+
+    @Override
+    public void run() {
+        super.run();
     }
 }

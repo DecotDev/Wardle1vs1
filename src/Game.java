@@ -2,6 +2,8 @@ import java.util.Scanner;
 
 public class Game {
 
+    private int numPlayers;
+
 
     Scanner sc = new Scanner(System.in);
 
@@ -24,5 +26,9 @@ public class Game {
         correcto = a.victoria(guess);
         System.out.println(a.respuesta);
     }
+    }
+
+    public void setNumPlayers(int numPlayers) {
+        this.numPlayers = numPlayers;
     }
 }
