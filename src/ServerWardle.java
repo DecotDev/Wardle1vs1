@@ -33,6 +33,9 @@ public class ServerWardle {
     }
 
     public static void main(String[] args) {
+        ServerWardle server = new ServerWardle(5225);
 
+        Thread thTcp= new Thread(server::listen);
+        thTcp.start();
     }
 }
