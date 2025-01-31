@@ -6,11 +6,12 @@ import java.util.logging.Logger;
 
 public class ServerWardle {
     private int port;
-    private Game game;
+    private Game2 game;
     private int numPlayers;
 
     public ServerWardle(int port) {
         this.port = port;
+        game = new Game2();
     }
 
     private void listen () {
