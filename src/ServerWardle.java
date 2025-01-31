@@ -1,37 +1,45 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ServerWardle {
-    private static final int PORT = 5225;
-    private static Socket player1 = null;
-    private static Socket player2 = null;
-    private static ExecutorService pool = Executors.newFixedThreadPool(2);
+    private int port;
+    private Game2 game;
+    private int numPlayers;
 
-    public static void main(String[] args) throws IOException {
-        ServerSocket serverSocket = new ServerSocket(PORT);
-        System.out.println("Servidor esperando jugadores...");
+    public ServerWardle(int port) {
+        this.port = port;
+        game = new Game2();
+    }
 
-        while (player1 == null || player2 == null) {
-            Socket player = serverSocket.accept();
-            if (player1 == null) {
-                player1 = player;
-                System.out.println("Jugador 1 conectado");
-            } else {
-                player2 = player;
-                System.out.println("Jugador 2 conectado");
-                iniciarJuego();
+    private void listen () {
+        ServerSocket serverSocket = null;
+        Socket clientSocket = null;
+        try {
+            serverSocket = new ServerSocket(port);
+            while(true) { //esperar connexió del client i llançar thread
+                System.out.println("Esperant al primer jugador...");
+                clientSocket = serverSocket.accept();
+                //Llançar Thread per establir la comunicació
+                //sumem 1 al numero de jugadors
+                numPlayers++;
+                game.setNumPlayers(numPlayers);
+                ThreadServerWardle threadServerWardle = new ThreadServerWardle(clientSocket, game);
+                threadServerWardle.start();
             }
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
-    private static void iniciarJuego() throws IOException {
-        ThreadServerWardle t1 = new ThreadServerWardle(player1, 1);
-        ThreadServerWardle t2 = new ThreadServerWardle(player2, 2);
+    public static void main(String[] args) {
+        ServerWardle server = new ServerWardle(5226);
 
-        pool.execute(t1);
-        pool.execute(t2);
+        Thread thTcp= new Thread(server::listen);
+        thTcp.start();
+
+
     }
 }

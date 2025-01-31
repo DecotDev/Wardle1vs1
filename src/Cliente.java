@@ -1,46 +1,82 @@
-// Cliente.java (Corregido)
-import java.io.*;
-import java.net.Socket;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Objects;
 import java.util.Scanner;
-public class Cliente {
-    private Socket socket;
-    private ObjectInputStream in;
-    private ObjectOutputStream out;
-    private Scanner scanner;
 
-    public Cliente(String host, int port) throws IOException {
-        socket = new Socket(host, port);
-        out = new ObjectOutputStream(socket.getOutputStream());
-        in = new ObjectInputStream(socket.getInputStream());
-        scanner = new Scanner(System.in);
+public class Cliente {
+    int playerID;
+    Game partida;
+    String palabra;
+    String respuesta="";
+    char correct = 'O', existent = '?', wrong = '-';
+
+    public Cliente(String palabra) throws FileNotFoundException {
+        this.palabra = palabra;
+        for(int i =0; i<palabra.length();i++){
+            respuesta += wrong;
+        }
     }
 
-    public void jugar() throws IOException, ClassNotFoundException {
-        System.out.println((String) in.readObject()); // Mensaje inicial
+    public String comprobar(String guess){
 
-        while (true) {
-            String mensaje = (String) in.readObject();
-            System.out.println(mensaje);
+        char[] divG = guess.toCharArray();
+        char[] divP = palabra.toCharArray();
+        char[] divR = respuesta.toCharArray();
 
-            if (mensaje.contains("Elige una palabra") || mensaje.contains("Es tu turno")) {
-                String input = scanner.nextLine();
-                out.writeObject(input);
-                out.flush();
-            } else if (mensaje.contains("¡Has ganado!")) {
+        for (int i =0; i < divG.length; i++){
+
+            if (divR[i] != wrong) {
+                if (divG[i] != divP[i]) {
+                    divR[i] = wrong;
+                } else if (!existe(divG[i], divP)) {
+                    divR[i] = wrong;
+                }
+            }
+            if (divG[i]==divP[i]){
+                divR[i]=correct;
+            } else if(existe(divG[i], divP)){
+                divR[i]=existent;
+            }
+        }
+
+
+        respuesta = String.valueOf(divR);
+        return respuesta;
+    }
+
+    public boolean existe(char a, char[] charArr){
+        int found = -1;
+        for (int i = 0; i < charArr.length; ++i) {
+            if (charArr[i] == a) {
+                found = i;
                 break;
             }
         }
-        cerrar();
+
+        return found!=-1;
     }
 
-    private void cerrar() throws IOException {
-        in.close();
-        out.close();
-        socket.close();
+    public boolean victoria(String guess){
+        String comp ="";
+        for(int i =0; i<palabra.length();i++){
+            comp+=correct;
+        }
+        return (Objects.equals(comprobar(guess), comp));
     }
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-        Cliente cliente = new Cliente("localhost", 5225);
-        cliente.jugar();
+    public Game getPartida() {
+        return partida;
+    }
+
+    public void setPartida(Game partida) {
+        this.partida = partida;
+    }
+
+    public String getPalabra() {
+        return palabra;
+    }
+
+    public void setPalabra(String palabra) {
+        this.palabra = palabra;
     }
 }
