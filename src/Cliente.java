@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class Cliente {
+    int playerID;
     Game partida;
     String palabra;
     String respuesta="";

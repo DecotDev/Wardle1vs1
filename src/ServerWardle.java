@@ -6,11 +6,12 @@ import java.util.logging.Logger;
 
 public class ServerWardle {
     private int port;
-    private Game game;
+    private Game2 game;
     private int numPlayers;
 
     public ServerWardle(int port) {
         this.port = port;
+        game = new Game2();
     }
 
     private void listen () {
@@ -19,6 +20,7 @@ public class ServerWardle {
         try {
             serverSocket = new ServerSocket(port);
             while(true) { //esperar connexió del client i llançar thread
+                System.out.println("Esperant al primer jugador...");
                 clientSocket = serverSocket.accept();
                 //Llançar Thread per establir la comunicació
                 //sumem 1 al numero de jugadors
@@ -33,9 +35,11 @@ public class ServerWardle {
     }
 
     public static void main(String[] args) {
-        ServerWardle server = new ServerWardle(5225);
+        ServerWardle server = new ServerWardle(5226);
 
         Thread thTcp= new Thread(server::listen);
         thTcp.start();
+
+
     }
 }

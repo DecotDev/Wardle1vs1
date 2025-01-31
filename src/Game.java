@@ -25,7 +25,7 @@ public class Game {
 
         correcto = a.victoria(guess);
         System.out.println(a.respuesta);
-    }
+        }
     }
 
     public void setNumPlayers(int numPlayers) {
