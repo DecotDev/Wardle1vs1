@@ -1,81 +1,58 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Objects;
+import java.io.*;
+import java.net.Socket;
 import java.util.Scanner;
 
 public class Cliente {
-    Game partida;
-    String palabra;
-    String respuesta="";
-    char correct = 'O', existent = '?', wrong = '-';
+    private Socket socket;
+    private BufferedReader in;
+    private PrintWriter out;
+    private Scanner scanner;
 
-    public Cliente(String palabra) throws FileNotFoundException {
-        this.palabra = palabra;
-        for(int i =0; i<palabra.length();i++){
-            respuesta += wrong;
-        }
+    public Cliente(String host, int port) throws IOException {
+        socket = new Socket(host, port);
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        out = new PrintWriter(socket.getOutputStream(), true);
+        scanner = new Scanner(System.in);
     }
 
-    public String comprobar(String guess){
+    public void jugar() throws IOException {
+        System.out.println(in.readLine()); // Mensaje de bienvenida
 
-        char[] divG = guess.toCharArray();
-        char[] divP = palabra.toCharArray();
-        char[] divR = respuesta.toCharArray();
+        // El primer cliente escoge la palabra, el segundo intenta adivinar
+        String role = in.readLine();
+        System.out.println(role);
 
-        for (int i =0; i < divG.length; i++){
-
-            if (divR[i] != wrong) {
-                if (divG[i] != divP[i]) {
-                    divR[i] = wrong;
-                } else if (!existe(divG[i], divP)) {
-                    divR[i] = wrong;
-                }
-            }
-            if (divG[i]==divP[i]){
-                divR[i]=correct;
-            } else if(existe(divG[i], divP)){
-                divR[i]=existent;
-            }
+        if (role.equals("Escoja una palabra para que su oponente adivine:")) {
+            System.out.print("Introduce una palabra: ");
+            String palabra = scanner.nextLine();
+            out.println(palabra);
         }
 
+        while (true) {
+            System.out.println(in.readLine()); // Turno del jugador
+            System.out.print("Introduce una palabra: ");
+            String guess = scanner.nextLine();
+            out.println(guess);
 
-        respuesta = String.valueOf(divR);
-        return respuesta;
-    }
+            String respuesta = in.readLine();
+            System.out.println("Resultado: " + respuesta);
 
-    public boolean existe(char a, char[] charArr){
-        int found = -1;
-        for (int i = 0; i < charArr.length; ++i) {
-            if (charArr[i] == a) {
-                found = i;
+            if (respuesta.equals("VICTORIA")) {
+                System.out.println("¡Has ganado!");
                 break;
             }
         }
-
-        return found!=-1;
+        cerrar();
     }
 
-    public boolean victoria(String guess){
-        String comp ="";
-        for(int i =0; i<palabra.length();i++){
-            comp+=correct;
-        }
-        return (Objects.equals(comprobar(guess), comp));
+    private void cerrar() throws IOException {
+        in.close();
+        out.close();
+        socket.close();
     }
 
-    public Game getPartida() {
-        return partida;
-    }
-
-    public void setPartida(Game partida) {
-        this.partida = partida;
-    }
-
-    public String getPalabra() {
-        return palabra;
-    }
-
-    public void setPalabra(String palabra) {
-        this.palabra = palabra;
+    public static void main(String[] args) throws IOException {
+        Cliente cliente = new Cliente("localhost", 5225);
+        cliente.jugar();
     }
 }
