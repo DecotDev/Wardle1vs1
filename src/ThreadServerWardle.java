@@ -1,3 +1,4 @@
+// ThreadServerWardle.java (Corregido)
 import java.io.*;
 import java.net.Socket;
 
@@ -6,14 +7,12 @@ public class ThreadServerWardle extends Thread {
     private int playerId;
     private ObjectInputStream in;
     private ObjectOutputStream out;
-    private int turnos;
 
     public ThreadServerWardle(Socket socket, int playerId) throws IOException {
         this.socket = socket;
         this.playerId = playerId;
         this.out = new ObjectOutputStream(socket.getOutputStream());
         this.in = new ObjectInputStream(socket.getInputStream());
-        this.turnos = 0;
     }
 
     @Override
@@ -21,27 +20,35 @@ public class ThreadServerWardle extends Thread {
         try {
             if (playerId == 1) {
                 out.writeObject("Escoja una palabra para que su oponente adivine:");
+                out.flush();
                 String palabra = (String) in.readObject();
                 ServerWardle.setPalabraAdivinar(palabra);
-                out.writeObject("Palabra enviada. Esperando al oponente...");
+                out.writeObject("Palabra establecida. Esperando al oponente...");
+                out.flush();
             } else {
-                out.writeObject("Bienvenido. Tu oponente ha elegido una palabra. ¡Adivina!");
+                while (!ServerWardle.getPalabraAdivinar().isEmpty()) {
+                    Thread.sleep(100);
+                }
+                out.writeObject("Tu oponente ha elegido una palabra. ¡Adivina!");
+                out.flush();
             }
 
             while (true) {
-                turnos++;
-                out.writeObject("Turno " + turnos + ": Introduce tu intento:");
+                out.writeObject("Introduce tu intento:");
+                out.flush();
                 Jugada jugada = (Jugada) in.readObject();
                 String resultado = comprobarPalabra(jugada.getIntento());
-                Jugada respuesta = new Jugada(jugada.getIntento(), resultado, turnos);
-                out.writeObject(respuesta);
-                if (resultado.equals("VICTORIA")) {
-                    out.writeObject("FELICIDADES, HAS GANADO EN " + turnos + " TURNOS!");
+                out.writeObject(new Jugada(jugada.getIntento(), resultado, jugada.getTurno() + 1));
+                out.flush();
+
+                if ("VICTORIA".equals(resultado)) {
+                    out.writeObject("¡FELICIDADES, HAS GANADO!");
+                    out.flush();
                     break;
                 }
             }
             socket.close();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -49,6 +56,7 @@ public class ThreadServerWardle extends Thread {
     private String comprobarPalabra(String intento) {
         String palabra = ServerWardle.getPalabraAdivinar();
         StringBuilder resultado = new StringBuilder();
+
         for (int i = 0; i < palabra.length(); i++) {
             if (i < intento.length() && intento.charAt(i) == palabra.charAt(i)) {
                 resultado.append("O"); // Letra correcta en la posición correcta
@@ -58,9 +66,6 @@ public class ThreadServerWardle extends Thread {
                 resultado.append("-"); // Letra incorrecta
             }
         }
-        if (resultado.toString().equals("O".repeat(palabra.length()))) {
-            return "VICTORIA";
-        }
-        return resultado.toString();
+        return resultado.toString().equals("O".repeat(palabra.length())) ? "VICTORIA" : resultado.toString();
     }
 }

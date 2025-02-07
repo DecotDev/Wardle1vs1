@@ -1,35 +1,47 @@
+// ServerWardle.java (Corregido)
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ServerWardle {
     private static final int PORT = 5225;
     private static Socket player1 = null;
     private static Socket player2 = null;
     private static String palabraAdivinar = "";
+    private static ExecutorService pool = Executors.newFixedThreadPool(2);
+    private static boolean palabraElegida = false;
 
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(PORT);
-        ExecutorService pool = Executors.newFixedThreadPool(2);
         System.out.println("Servidor esperando jugadores...");
 
-        while (true) {
+        while (player1 == null || player2 == null) {
+            Socket player = serverSocket.accept();
             if (player1 == null) {
-                player1 = serverSocket.accept();
+                player1 = player;
                 System.out.println("Jugador 1 conectado");
-                pool.execute(new ThreadServerWardle(player1, 1));
-            } else if (player2 == null) {
-                player2 = serverSocket.accept();
+            } else {
+                player2 = player;
                 System.out.println("Jugador 2 conectado");
-                pool.execute(new ThreadServerWardle(player2, 2));
+                iniciarJuego();
             }
         }
     }
 
+    private static void iniciarJuego() throws IOException {
+        ThreadServerWardle t1 = new ThreadServerWardle(player1, 1);
+        ThreadServerWardle t2 = new ThreadServerWardle(player2, 2);
+
+        pool.execute(t1);
+        pool.execute(t2);
+    }
+
     public static synchronized void setPalabraAdivinar(String palabra) {
         palabraAdivinar = palabra;
+        palabraElegida = true;
+        System.out.println("Palabra establecida: " + palabra);
     }
 
     public static synchronized String getPalabraAdivinar() {

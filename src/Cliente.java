@@ -1,43 +1,44 @@
+// Cliente.java (Corregido)
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
 public class Cliente {
     private Socket socket;
-    private BufferedReader in;
-    private PrintWriter out;
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
     private Scanner scanner;
 
     public Cliente(String host, int port) throws IOException {
         socket = new Socket(host, port);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        out = new PrintWriter(socket.getOutputStream(), true);
+        out = new ObjectOutputStream(socket.getOutputStream());
+        in = new ObjectInputStream(socket.getInputStream());
         scanner = new Scanner(System.in);
     }
 
-    public void jugar() throws IOException {
-        System.out.println(in.readLine()); // Mensaje de bienvenida
-
-        // El primer cliente escoge la palabra, el segundo intenta adivinar
-        String role = in.readLine();
+    public void jugar() throws IOException, ClassNotFoundException {
+        System.out.println((String) in.readObject()); // Mensaje de bienvenida
+        String role = (String) in.readObject();
         System.out.println(role);
 
         if (role.equals("Escoja una palabra para que su oponente adivine:")) {
             System.out.print("Introduce una palabra: ");
             String palabra = scanner.nextLine();
-            out.println(palabra);
+            out.writeObject(palabra);
+            out.flush();
         }
 
         while (true) {
-            System.out.println(in.readLine()); // Turno del jugador
+            System.out.println((String) in.readObject()); // Turno del jugador
             System.out.print("Introduce una palabra: ");
             String guess = scanner.nextLine();
-            out.println(guess);
+            out.writeObject(new Jugada(guess, "", 0));
+            out.flush();
 
-            String respuesta = in.readLine();
-            System.out.println("Resultado: " + respuesta);
+            Jugada respuesta = (Jugada) in.readObject();
+            System.out.println("Resultado: " + respuesta.getResultado());
 
-            if (respuesta.equals("VICTORIA")) {
+            if (respuesta.getResultado().equals("VICTORIA")) {
                 System.out.println("¡Has ganado!");
                 break;
             }
@@ -51,7 +52,7 @@ public class Cliente {
         socket.close();
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
         Cliente cliente = new Cliente("localhost", 5225);
         cliente.jugar();
     }
