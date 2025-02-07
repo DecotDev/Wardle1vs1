@@ -2,7 +2,6 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
-
 public class Cliente {
     private Socket socket;
     private ObjectInputStream in;
@@ -17,29 +16,17 @@ public class Cliente {
     }
 
     public void jugar() throws IOException, ClassNotFoundException {
-        System.out.println((String) in.readObject()); // Mensaje de bienvenida
-        String role = (String) in.readObject();
-        System.out.println(role);
-
-        if (role.equals("Escoja una palabra para que su oponente adivine:")) {
-            System.out.print("Introduce una palabra: ");
-            String palabra = scanner.nextLine();
-            out.writeObject(palabra);
-            out.flush();
-        }
+        System.out.println((String) in.readObject()); // Mensaje inicial
 
         while (true) {
-            System.out.println((String) in.readObject()); // Turno del jugador
-            System.out.print("Introduce una palabra: ");
-            String guess = scanner.nextLine();
-            out.writeObject(new Jugada(guess, "", 0));
-            out.flush();
+            String mensaje = (String) in.readObject();
+            System.out.println(mensaje);
 
-            Jugada respuesta = (Jugada) in.readObject();
-            System.out.println("Resultado: " + respuesta.getResultado());
-
-            if (respuesta.getResultado().equals("VICTORIA")) {
-                System.out.println("¡Has ganado!");
+            if (mensaje.contains("Elige una palabra") || mensaje.contains("Es tu turno")) {
+                String input = scanner.nextLine();
+                out.writeObject(input);
+                out.flush();
+            } else if (mensaje.contains("¡Has ganado!")) {
                 break;
             }
         }

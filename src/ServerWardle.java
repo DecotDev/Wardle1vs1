@@ -1,4 +1,3 @@
-// ServerWardle.java (Corregido)
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -9,9 +8,7 @@ public class ServerWardle {
     private static final int PORT = 5225;
     private static Socket player1 = null;
     private static Socket player2 = null;
-    private static String palabraAdivinar = "";
     private static ExecutorService pool = Executors.newFixedThreadPool(2);
-    private static boolean palabraElegida = false;
 
     public static void main(String[] args) throws IOException {
         ServerSocket serverSocket = new ServerSocket(PORT);
@@ -36,15 +33,5 @@ public class ServerWardle {
 
         pool.execute(t1);
         pool.execute(t2);
-    }
-
-    public static synchronized void setPalabraAdivinar(String palabra) {
-        palabraAdivinar = palabra;
-        palabraElegida = true;
-        System.out.println("Palabra establecida: " + palabra);
-    }
-
-    public static synchronized String getPalabraAdivinar() {
-        return palabraAdivinar;
     }
 }
