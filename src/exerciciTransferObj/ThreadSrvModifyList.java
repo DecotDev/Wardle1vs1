@@ -11,13 +11,11 @@ class ThreadSrvModifyList extends Thread {
     private Socket clientSocket = null;
     private InputStream in = null;
     private OutputStream out = null;
-    private Llista llista;
-    private Joc joc;
+    private final Joc joc;
     private boolean continua;
 
     public ThreadSrvModifyList(Socket clientSocket, Joc joc) throws IOException {
         this.clientSocket = clientSocket;
-        this.llista = llista;
         in = clientSocket.getInputStream();
         out = clientSocket.getOutputStream();
         continua = true;
@@ -26,32 +24,35 @@ class ThreadSrvModifyList extends Thread {
 
     @Override
     public void run() {
-
+        Jugada jugada = null;
         try {
             ObjectInputStream ois = new ObjectInputStream(in);
             ObjectOutputStream oos = new ObjectOutputStream(out);
 
             //Enviar joc per establir el número de jugador i paraula
             oos.writeObject(joc);
+            oos.reset();
             oos.flush();
 
             //Llegir joc amb la paraula escollida
-            joc = (Joc) ois.readObject();
+            jugada = (Jugada) ois.readObject();
+            actualitzarGame(jugada);
 
             //Esperar a que sigui torn 2
-            if (joc.getTorn() >= 1) {
+            while (joc.getTorn() >= 1) {
                 oos.writeObject(joc);
+                oos.reset();
                 oos.flush();
-                joc = (Joc) ois.readObject();
+                jugada = (Jugada) ois.readObject();
+                actualitzarGame(jugada);
             }
-
-
-            //Thread.sleep(500);
-            //joc.setNumJugadros(joc.getNumJugadros() + 1);
-            //oos.writeObject(joc);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+    private void actualitzarGame(Jugada jugada) {
+        joc.actualitzaTorn();
+        joc.setParaula(jugada.getPlayer(), jugada.getParaula());
     }
 }
