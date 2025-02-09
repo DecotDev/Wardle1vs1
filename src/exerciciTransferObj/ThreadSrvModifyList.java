@@ -31,41 +31,27 @@ class ThreadSrvModifyList extends Thread {
             ObjectInputStream ois = new ObjectInputStream(in);
             ObjectOutputStream oos = new ObjectOutputStream(out);
 
-            try {
-                //enviar llista
-                //llista = (Llista) ois.readObject();
-                //llista.setNumberList(sortList(llista));
-                //oos.writeObject(llista);
-                //oos.flush();
-                //enviar game
-                //for (int i = 0; i < 500; i++) {
-                oos.writeObject(joc);
+            //Enviar joc per establir el número de jugador i paraula
+            oos.writeObject(joc);
+            oos.flush();
 
+            //Llegir joc amb la paraula escollida
+            joc = (Joc) ois.readObject();
+
+            //Esperar a que sigui torn 2
+            if (joc.getTorn() >= 1) {
+                oos.writeObject(joc);
                 oos.flush();
-
                 joc = (Joc) ois.readObject();
-                Thread.sleep(500);
-                joc.setNumJugadros(joc.getNumJugadros() + 1);
-                oos.writeObject(joc);
-                //}
-
-                //while (true) {
-                //this.joc = (Joc) ois.readObject();
-                    //Thread.sleep(500);
-                //oos.writeObject(joc);
-                //}
-
-                } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
             }
+
+
+            //Thread.sleep(500);
+            //joc.setNumJugadros(joc.getNumJugadros() + 1);
+            //oos.writeObject(joc);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-    private List<Integer> sortList(Llista llista) {
-        List<Integer> numberList = llista.getNumberList();
-        List<Integer> numberListUnique = new ArrayList<>(new HashSet<>(numberList));
-        Collections.sort(numberListUnique);
-        return numberListUnique;
     }
 }
