@@ -7,7 +7,6 @@ import java.net.Socket;
 public class SrvTcpModifyList {
 
     private int port;
-    private Llista llista;
     private int numJugadors = 0;
     private Joc joc;
 
