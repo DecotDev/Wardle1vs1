@@ -33,9 +33,9 @@ class ThreadSrvModifyList extends Thread {
 
             try {
                 //enviar llista
-                llista = (Llista) ois.readObject();
-                llista.setNumberList(sortList(llista));
-                oos.writeObject(llista);
+                //llista = (Llista) ois.readObject();
+                //llista.setNumberList(sortList(llista));
+                //oos.writeObject(llista);
                 //oos.flush();
                 //enviar game
                 //for (int i = 0; i < 500; i++) {
@@ -44,6 +44,9 @@ class ThreadSrvModifyList extends Thread {
                 oos.flush();
 
                 joc = (Joc) ois.readObject();
+                Thread.sleep(500);
+                joc.setNumJugadros(joc.getNumJugadros() + 1);
+                oos.writeObject(joc);
                 //}
 
                 //while (true) {
