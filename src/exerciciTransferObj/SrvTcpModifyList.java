@@ -21,7 +21,7 @@ public class SrvTcpModifyList {
         Socket clientSocket = null;
         try {
             serverSocket = new ServerSocket(port);
-            while (true) {
+            while (numJugadors < 10) {
                 System.out.println("Esperant client...");
                 clientSocket = serverSocket.accept();
                 numJugadors += 1;
