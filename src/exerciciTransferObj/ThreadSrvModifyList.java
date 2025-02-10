@@ -54,5 +54,6 @@ class ThreadSrvModifyList extends Thread {
     private void actualitzarGame(Jugada jugada) {
         joc.actualitzaTorn();
         joc.setParaula(jugada.getPlayer(), jugada.getParaula());
+        joc.setResposata(jugada.getPlayer(), jugada.getResposta());
     }
 }
