@@ -1,5 +1,3 @@
-package exerciciTransferObj;
-
 import java.io.PipedReader;
 import java.io.Serializable;
 

@@ -1,5 +1,3 @@
-package exerciciTransferObj;
-
 import java.io.Serializable;
 
 public class Joc implements Serializable {

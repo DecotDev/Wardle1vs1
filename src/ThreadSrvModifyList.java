@@ -1,11 +1,5 @@
-package exerciciTransferObj;
-
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 
 class ThreadSrvModifyList extends Thread {
     private Socket clientSocket = null;
