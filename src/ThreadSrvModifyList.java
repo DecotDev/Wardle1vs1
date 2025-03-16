@@ -8,6 +8,7 @@ class ThreadSrvModifyList extends Thread {
     private final Joc joc;
     private boolean continua;
 
+
     public ThreadSrvModifyList(Socket clientSocket, Joc joc) throws IOException {
         this.clientSocket = clientSocket;
         in = clientSocket.getInputStream();
