@@ -2,6 +2,9 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -32,6 +35,21 @@ public class ClientThread extends Thread {
         }
     }
 
+    private List<String> getRandomWords() {
+        List<String> words = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader("src/Palabras.txt"))) {
+            String line = br.readLine();
+            if (line != null) {
+                String[] allWords = line.split(";");
+                Collections.addAll(words, allWords);
+                Collections.shuffle(words); // Shuffle the list to get random words
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return words.subList(0, 3); // Return the first 3 words after shuffling
+    }
+
     public void run() {
         ObjectOutputStream oos = null;
         ObjectInputStream ois = null;
@@ -42,85 +60,89 @@ public class ClientThread extends Thread {
             throw new RuntimeException(e);
         }
 
-            try {
-                //Llegir joc inicial i posar id de jugadors
-                joc = (Joc) ois.readObject();
-                jugador = joc.getNumJugadros() - 1;
-                if (jugador == 0)adversari = 1;
-                else adversari = 0;
-                jugada.setPlayer(jugador);
-                System.out.println("Joc rebut, ets el jugador: " + jugador);
+        try {
+            // Llegir joc inicial i posar id de jugadors
+            joc = (Joc) ois.readObject();
+            jugador = joc.getNumJugadros() - 1;
+            if (jugador == 0) adversari = 1;
+            else adversari = 0;
+            jugada.setPlayer(jugador);
+            System.out.println("Joc rebut, ets el jugador: " + jugador);
 
-                //Escollir paraula i enviar joc
-                joc.actualitzaTorn();
-                System.out.print("Escull una parula per al rival: ");
-                jugada.setParaula(sc.nextLine());
+            // Escollir paraula i enviar joc
+            joc.actualitzaTorn();
+            List<String> randomWords = getRandomWords();
+            System.out.println("Escull una paraula per al rival:");
+            for (int i = 0; i < randomWords.size(); i++) {
+                System.out.println((i + 1) + ". " + randomWords.get(i));
+            }
+            System.out.print("Introdueix el número de la paraula escollida: ");
+            int choice = sc.nextInt();
+            sc.nextLine(); // Consume the newline character
+            jugada.setParaula(randomWords.get(choice - 1));
+
+            jugada.setGuanyador(joc.getGuanyador());
+
+            oos.writeObject(jugada);
+            oos.reset();
+            oos.flush();
+            System.out.println("\nParaula enviada.");
+            Thread.sleep(500);
+
+            // Llegir paraula escollida pel rival
+            Joc jocNou = null;
+            jocNou = (Joc) ois.readObject();
+            joc = jocNou;
+            // soutInfo();
+            while (true) {
+                Thread.sleep(500);
+                // joc.setNumJugadros(joc.getNumJugadros() + 1);
+                // System.out.println("Jugadors +1 : " + joc.getNumJugadros());
+                System.out.print("Intenta endevinar la paraula: ");
+                jugada.setResposta(sc.nextLine());
+
+                // resultat = comprovarParaula(joc.getResposata(jugador), joc.getParaula(adversari));
+                // comprovarResultat(resultat);
 
                 jugada.setGuanyador(joc.getGuanyador());
 
                 oos.writeObject(jugada);
                 oos.reset();
                 oos.flush();
-                System.out.println("\nParaula enviada.");
+
+                // dictarGuanyador();
+
                 Thread.sleep(500);
 
-                //Llegir paraula escollida pel rival
-                Joc jocNou = null;
-                jocNou = (Joc) ois.readObject();
-                joc = jocNou;
-                //soutInfo();
-                while (true) {
-                    Thread.sleep(500);
-                    //joc.setNumJugadros(joc.getNumJugadros() + 1);
-                    //System.out.println("Jugadors +1 : " + joc.getNumJugadros());
-                    System.out.print("Intenta endevinar la paraula: ");
-                    jugada.setResposta(sc.nextLine());
+                joc = (Joc) ois.readObject();
 
-                    //resultat = comprovarParaula(joc.getResposata(jugador), joc.getParaula(adversari));
-                    //comprovarResultat(resultat);
+                jugada.setGuanyador(joc.getGuanyador());
 
-                    jugada.setGuanyador(joc.getGuanyador());
+                dictarGuanyador();
 
-                    oos.writeObject(jugada);
-                    oos.reset();
-                    oos.flush();
+                resultat = comprovarParaula(joc.getResposata(jugador), joc.getParaula(adversari));
+                System.out.println(resultat);
+                comprovarResultat(resultat);
 
-                    //dictarGuanyador();
+                dictarGuanyador();
 
-                    Thread.sleep(500);
+                oos.writeObject(jugada);
+                oos.reset();
+                oos.flush();
+                joc = (Joc) ois.readObject();
 
-                    joc = (Joc) ois.readObject();
+                // soutInfo();
 
-                    jugada.setGuanyador(joc.getGuanyador());
-
-                    dictarGuanyador();
-
-                    resultat = comprovarParaula(joc.getResposata(jugador), joc.getParaula(adversari));
-                    System.out.println(resultat);
-                    comprovarResultat(resultat);
-
-                    dictarGuanyador();
-
-
-
-                    oos.writeObject(jugada);
-                    oos.reset();
-                    oos.flush();
-                    joc = (Joc) ois.readObject();
-
-                    //soutInfo();
-
-                    if (joc.getGuanyador() == jugador) {
-                        Thread.sleep(100);
-                        System.exit(0);
-                    }
-
-
-                    if (!continueConnected) close(socket);
+                if (joc.getGuanyador() == jugador) {
+                    Thread.sleep(100);
+                    System.exit(0);
                 }
-            }catch (RuntimeException | IOException | ClassNotFoundException | InterruptedException e) {
-                throw new RuntimeException(e);
+
+                if (!continueConnected) close(socket);
             }
+        } catch (RuntimeException | IOException | ClassNotFoundException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void soutInfo() {
@@ -135,25 +157,26 @@ public class ClientThread extends Thread {
         System.out.println("Guanyador: " + joc.getGuanyador());
     }
 
-    private void close(Socket socket){
-        //si falla el tancament no podem fer gaire cosa, només enregistrar
-        //el problema
+    private void close(Socket socket) {
+        // si falla el tancament no podem fer gaire cosa, només enregistrar
+        // el problema
         try {
-            //tancament de tots els recursos
-            if(socket!=null && !socket.isClosed()){
-                if(!socket.isInputShutdown()){
+            // tancament de tots els recursos
+            if (socket != null && !socket.isClosed()) {
+                if (!socket.isInputShutdown()) {
                     socket.shutdownInput();
                 }
-                if(!socket.isOutputShutdown()){
+                if (!socket.isOutputShutdown()) {
                     socket.shutdownOutput();
                 }
                 socket.close();
             }
         } catch (IOException ex) {
-            //enregistrem l'error amb un objecte Logger
+            // enregistrem l'error amb un objecte Logger
             Logger.getLogger(ClientThread.class.toString());
         }
     }
+
     private String comprovarParaula(String intent, String paraula) {
 
         if (intent.length() != paraula.length()) {
@@ -190,12 +213,12 @@ public class ClientThread extends Thread {
     private void dictarGuanyador() {
         if (joc.getGuanyador() == (jugador)) {
             System.out.println("ENHORABONA, HAS GUANYAT!");
-            //close(socket);
+            // close(socket);
 
         }
         if (joc.getGuanyador() == (adversari)) {
             System.out.println("MASSA LENT, HAS PERDUT");
-            //close(socket);
+            // close(socket);
             System.out.println("La paraula que havies d'adivinar era: " + joc.getParaula(adversari));
             System.exit(0);
         }
