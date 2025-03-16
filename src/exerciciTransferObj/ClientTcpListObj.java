@@ -17,6 +17,7 @@ public class ClientTcpListObj extends Thread {
     private boolean continueConnected;
     private Joc joc;
     private Scanner sc = new Scanner(System.in);
+    private Jugada jugada;
 
     private ClientTcpListObj(String hostname, int port) {
         try {
@@ -24,6 +25,7 @@ public class ClientTcpListObj extends Thread {
             in = socket.getInputStream();
             out = socket.getOutputStream();
             continueConnected = true;
+            jugada = new Jugada();
         } catch (UnknownHostException uhe) {
             System.out.println("Error de connexió. No existeix el host: " + uhe.getMessage());
         } catch (IOException e) {
@@ -47,38 +49,52 @@ public class ClientTcpListObj extends Thread {
                 jugador = joc.getNumJugadros() - 1;
                 if (jugador == 0)adversari = 1;
                 else adversari = 0;
+                jugada.setPlayer(jugador);
                 System.out.println("Joc rebut, ets el jugador: " + jugador);
 
                 //Escollir paraula i enviar joc
                 joc.actualitzaTorn();
                 System.out.print("Escull una parula per al rival: ");
-                joc.setParaula(jugador, sc.nextLine());
-                oos.writeObject(joc);
+                jugada.setParaula(sc.nextLine());
+                oos.writeObject(jugada);
+                oos.reset();
                 oos.flush();
                 System.out.println("\nParaula enviada.");
+                Thread.sleep(500);
 
                 //Llegir paraula escollida pel rival
-                joc = (Joc) ois.readObject();
-                System.out.println("Parula escollida per el rival: " + joc.getParaula(adversari));
-                System.out.println("Parula 1: " + joc.getParaula(0));
-                System.out.println("Parula 2: " + joc.getParaula(1));
-                System.out.println("Torn: " + joc.getTorn());
+                Joc jocNou = null;
+                jocNou = (Joc) ois.readObject();
+                joc = jocNou;
+                soutInfo();
                 while (true) {
                     Thread.sleep(500);
                     //joc.setNumJugadros(joc.getNumJugadros() + 1);
                     //System.out.println("Jugadors +1 : " + joc.getNumJugadros());
-                    oos.writeObject(joc);
+                    System.out.print("Intenta endevinar la paraula: ");
+                    jugada.setResposta(sc.nextLine());
+                    oos.writeObject(jugada);
+                    oos.reset();
                     oos.flush();
                     Thread.sleep(500);
 
                     joc = (Joc) ois.readObject();
-                    System.out.println("Jugadors del joc rebut" + joc.getNumJugadros());
+                    soutInfo();
 
                     if (!continueConnected) close(socket);
                 }
             }catch (RuntimeException | IOException | ClassNotFoundException | InterruptedException e) {
                 throw new RuntimeException(e);
             }
+    }
+
+    private void soutInfo() {
+        System.out.println("Llista de paraules i info");
+        System.out.println("Parula 1: " + joc.getParaula(0));
+        System.out.println("Parula 2: " + joc.getParaula(1));
+        System.out.println("Resposta 1: " + joc.getResposata(0));
+        System.out.println("Resposta 2: " + joc.getResposata(1));
+        System.out.println("Torn: " + joc.getTorn());
     }
 
     private void close(Socket socket){
