@@ -1,16 +1,14 @@
-package exerciciTransferObj;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class SrvTcpModifyList {
+public class Server {
 
     private int port;
     private int numJugadors = 0;
     private Joc joc;
 
-    private SrvTcpModifyList(int port) {
+    private Server(int port) {
         this.port = port;
         joc = new Joc();
     }
@@ -27,7 +25,7 @@ public class SrvTcpModifyList {
                 System.out.println("Client nou connectat, jugadors connectats: " + numJugadors);
                 joc.setNumJugadros(numJugadors);
                 System.out.println(joc.getNumJugadros());
-                ThreadSrvModifyList ThreadSrvModifyList = new ThreadSrvModifyList(clientSocket, joc);
+                ThreadServer ThreadSrvModifyList = new ThreadServer(clientSocket, joc);
                 Thread client = new Thread(ThreadSrvModifyList);
                 client.start();
             }
@@ -37,7 +35,7 @@ public class SrvTcpModifyList {
     }
 
     public static void main(String[] args) {
-        SrvTcpModifyList srv = new SrvTcpModifyList(5558);
+        Server srv = new Server(5558);
         Thread thTcp = new Thread(srv::listen);
         thTcp.start();
 

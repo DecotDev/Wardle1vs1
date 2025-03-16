@@ -1,6 +1,3 @@
-package exerciciTransferObj;
-
-import java.io.PipedReader;
 import java.io.Serializable;
 
 public class Jugada implements Serializable {

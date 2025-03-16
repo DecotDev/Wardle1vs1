@@ -1,5 +1,3 @@
-package exerciciTransferObj;
-
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -7,7 +5,7 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
-public class ClientTcpListObj extends Thread {
+public class ClientThread extends Thread {
 
     private int jugador;
     private int adversari;
@@ -19,7 +17,7 @@ public class ClientTcpListObj extends Thread {
     private Scanner sc = new Scanner(System.in);
     private Jugada jugada;
 
-    private ClientTcpListObj(String hostname, int port) {
+    private ClientThread(String hostname, int port) {
         try {
             socket = new Socket(InetAddress.getByName(hostname), port);
             in = socket.getInputStream();
@@ -113,13 +111,13 @@ public class ClientTcpListObj extends Thread {
             }
         } catch (IOException ex) {
             //enregistrem l'error amb un objecte Logger
-            Logger.getLogger(ClientTcpListObj.class.toString());
+            Logger.getLogger(ClientThread.class.toString());
         }
     }
 
     public static void main(String[] args) {
         String ipSrv = "127.0.0.1";
-        ClientTcpListObj clientTcp = new ClientTcpListObj(ipSrv, 5558);
+        ClientThread clientTcp = new ClientThread(ipSrv, 5558);
         clientTcp.start();
 
     }

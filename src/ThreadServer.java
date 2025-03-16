@@ -1,20 +1,14 @@
-package exerciciTransferObj;
-
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 
-class ThreadSrvModifyList extends Thread {
+class ThreadServer extends Thread {
     private Socket clientSocket = null;
     private InputStream in = null;
     private OutputStream out = null;
     private final Joc joc;
     private boolean continua;
 
-    public ThreadSrvModifyList(Socket clientSocket, Joc joc) throws IOException {
+    public ThreadServer(Socket clientSocket, Joc joc) throws IOException {
         this.clientSocket = clientSocket;
         in = clientSocket.getInputStream();
         out = clientSocket.getOutputStream();
