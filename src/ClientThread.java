@@ -93,29 +93,18 @@ public class ClientThread extends Thread {
             Joc jocNou = null;
             jocNou = (Joc) ois.readObject();
             joc = jocNou;
-            // soutInfo();
             while (true) {
                 Thread.sleep(500);
-                // joc.setNumJugadros(joc.getNumJugadros() + 1);
-                // System.out.println("Jugadors +1 : " + joc.getNumJugadros());
                 System.out.print("Intenta endevinar la paraula: ");
                 jugada.setResposta(sc.nextLine());
-
-                // resultat = comprovarParaula(joc.getResposata(jugador), joc.getParaula(adversari));
-                // comprovarResultat(resultat);
-
                 jugada.setGuanyador(joc.getGuanyador());
 
                 oos.writeObject(jugada);
                 oos.reset();
                 oos.flush();
 
-                // dictarGuanyador();
-
                 Thread.sleep(500);
-
                 joc = (Joc) ois.readObject();
-
                 jugada.setGuanyador(joc.getGuanyador());
 
                 dictarGuanyador();
@@ -131,20 +120,19 @@ public class ClientThread extends Thread {
                 oos.flush();
                 joc = (Joc) ois.readObject();
 
-                // soutInfo();
-
                 if (joc.getGuanyador() == jugador) {
                     Thread.sleep(100);
                     System.exit(0);
                 }
 
-                if (!continueConnected) close(socket);
+                if (!continueConnected) System.exit(0);
             }
         } catch (RuntimeException | IOException | ClassNotFoundException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
+    //Metode utilizat durant el desenvolupament
     private void soutInfo() {
         System.out.println("Llista de paraules i info");
         System.out.println("Parula 1: " + joc.getParaula(0));
@@ -155,26 +143,6 @@ public class ClientThread extends Thread {
         System.out.println("Jugador: " + jugador);
         System.out.println("Adversari: " + adversari);
         System.out.println("Guanyador: " + joc.getGuanyador());
-    }
-
-    private void close(Socket socket) {
-        // si falla el tancament no podem fer gaire cosa, només enregistrar
-        // el problema
-        try {
-            // tancament de tots els recursos
-            if (socket != null && !socket.isClosed()) {
-                if (!socket.isInputShutdown()) {
-                    socket.shutdownInput();
-                }
-                if (!socket.isOutputShutdown()) {
-                    socket.shutdownOutput();
-                }
-                socket.close();
-            }
-        } catch (IOException ex) {
-            // enregistrem l'error amb un objecte Logger
-            Logger.getLogger(ClientThread.class.toString());
-        }
     }
 
     private String comprovarParaula(String intent, String paraula) {
@@ -213,12 +181,9 @@ public class ClientThread extends Thread {
     private void dictarGuanyador() {
         if (joc.getGuanyador() == (jugador)) {
             System.out.println("ENHORABONA, HAS GUANYAT!");
-            // close(socket);
-
         }
         if (joc.getGuanyador() == (adversari)) {
             System.out.println("MASSA LENT, HAS PERDUT");
-            // close(socket);
             System.out.println("La paraula que havies d'adivinar era: " + joc.getParaula(adversari));
             System.exit(0);
         }
