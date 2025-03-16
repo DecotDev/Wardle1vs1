@@ -5,6 +5,7 @@ public class Jugada implements Serializable {
     private int player;
     private String paraula;
     private String resposta;
+    private int guanyador = -1;
 
     public Jugada() {}
 
@@ -31,6 +32,15 @@ public class Jugada implements Serializable {
     public void setResposta(String resposta) {
         this.resposta = resposta;
     }
-    //enviar resultando del intento de avdivinanza del cliente
+
+    public int getGuanyador() {
+        return guanyador;
+    }
+
+    public void setGuanyador(int guanyador) {
+        this.guanyador = guanyador;
+    }
+
+//enviar resultando del intento de avdivinanza del cliente
     //enviar turno
 }

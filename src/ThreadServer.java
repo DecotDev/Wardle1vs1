@@ -49,5 +49,9 @@ class ThreadServer extends Thread {
         joc.actualitzaTorn();
         joc.setParaula(jugada.getPlayer(), jugada.getParaula());
         joc.setResposata(jugada.getPlayer(), jugada.getResposta());
+        if (joc.getGuanyador() == -1) {
+            joc.setGuanyador(jugada.getGuanyador());
+        }
+
     }
 }

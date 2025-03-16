@@ -6,12 +6,14 @@ public class Joc implements Serializable {
     private int numJugadros;
     private String[] paraula;
     private String[] resposta;
+    private int guanyador;
 
     public Joc() {
         this.torn = 0;
         this.numJugadros = 0;
         this.paraula =  new String[2];
         this.resposta =  new String[2];
+        this.guanyador = -1;
     }
 
     public int getTorn() {
@@ -49,4 +51,11 @@ public class Joc implements Serializable {
         this.torn = this.torn + 1;
     }
 
+    public int getGuanyador() {
+        return guanyador;
+    }
+
+    public void setGuanyador(int guanyador) {
+        this.guanyador = guanyador;
+    }
 }
