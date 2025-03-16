@@ -24,7 +24,7 @@ public class SrvTcpModifyList {
                 System.out.println("Esperant client...");
                 clientSocket = serverSocket.accept();
                 numJugadors += 1;
-                System.out.println("Client 1 connectat, jugadors connectats: " + numJugadors);
+                System.out.println("Client nou connectat, jugadors connectats: " + numJugadors);
                 joc.setNumJugadros(numJugadors);
                 System.out.println(joc.getNumJugadros());
                 ThreadSrvModifyList ThreadSrvModifyList = new ThreadSrvModifyList(clientSocket, joc);
