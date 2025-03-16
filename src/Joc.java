@@ -20,10 +20,6 @@ public class Joc implements Serializable {
         return torn;
     }
 
-    public void setTorn(int torn) {
-        this.torn = torn;
-    }
-
     public String getResposata(int jugador) {
         return resposta[jugador];
     }
@@ -47,6 +43,7 @@ public class Joc implements Serializable {
     public void setNumJugadros(int numJugadros) {
         this.numJugadros = numJugadros;
     }
+
     public void actualitzaTorn() {
         this.torn = this.torn + 1;
     }
